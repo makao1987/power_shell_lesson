@@ -1,0 +1,25 @@
+$gradleCache = "$env:USERPROFILE\.gradle\caches\modules-2\files-2.1"
+$targetRepo = "C:\offline-maven-repo"  # 出力先（USBやNASでもOK）
+
+Get-ChildItem -Path $gradleCache -Recurse -Filter *.jar | ForEach-Object {
+    $jarPath = $_.FullName
+    $relativePath = $jarPath.Substring($gradleCache.Length + 1)
+    $parts = $relativePath.Split("\")
+    
+    if ($parts.Length -ge 4) {
+        $groupId = $parts[0] -replace "_", "."  # Gradleは一部groupIdに_を使うことがある
+        $artifactId = $parts[1]
+        $version = $parts[2]
+
+        Write-Host "Installing $groupId:$artifactId:$version"
+
+        mvn install:install-file `
+            -Dfile="$jarPath" `
+            -DgroupId="$groupId" `
+            -DartifactId="$artifactId" `
+            -Dversion="$version" `
+            -Dpackaging=jar `
+            -DgeneratePom=true `
+            -DlocalRepositoryPath="$targetRepo"
+    }
+}
