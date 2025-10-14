@@ -1,0 +1,17 @@
+①変数gradleCacheに"$env:USERPROFILE\.gradle\caches\modules-2\files-2.1"のパスを代入
+②targetRepoを出力先に設定
+③$gradleCach以下のフォルダの 拡張子が.jarのファイルに対して処理を行う行う処理は以下
+　③－１　.jarファイルのフルパスを取得
+　③ー２　フルパスからgradleCacheの部分とgradleCacheの末尾の\を除外して相対パスを取得して $relativePathに代入
+　③ー３　$relativePatを\で分割して$parts配列に代入
+
+④$partsに対して処理を行う処理の内容は以下
+　④ー１　$parts[0]　
+　※相対パスの一つ目に対して「_」を「.」に変換。
+　groupidを一部のものは、「_」でつなげるためmaven形式に合わせるため、「.」に変換
+　④ー２　$parts[1]はartifactIdのため取得
+　④ー３　$parts[1]はバージョンのため取得
+
+⑤　mvn install:install-file コマンドを整形して実行
+
+
